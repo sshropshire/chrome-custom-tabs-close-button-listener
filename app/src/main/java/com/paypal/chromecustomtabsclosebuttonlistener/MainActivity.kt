@@ -37,10 +37,11 @@ import com.paypal.chromecustomtabsclosebuttonlistener.utils.OnLifecycleOwnerResu
 import com.paypal.chromecustomtabsclosebuttonlistener.utils.OnNewIntentEffect
 import com.paypal.chromecustomtabsclosebuttonlistener.utils.getActivityOrNull
 
+// Inspiration Ref: https://stackoverflow.com/a/41444238
+
 sealed class ChromeCustomTabsResult {
     data object SuccessViaLifecycleResumed : ChromeCustomTabsResult()
-    data object SuccessViaNewIntent : ChromeCustomTabsResult()
-    data object CanceledViaActivityResult : ChromeCustomTabsResult()
+    data object SuccessViaNewIntent : ChromeCustomTabsResult() data object CanceledViaActivityResult : ChromeCustomTabsResult()
     data class Unknown(val resultCode: Int, val intent: Intent?) : ChromeCustomTabsResult()
 }
 
@@ -65,7 +66,6 @@ private fun isSuccessUri(uri: Uri?): Boolean {
     return uri?.toString()?.contains("success") ?: false
 }
 
-// Ref: https://stackoverflow.com/a/41444238
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
