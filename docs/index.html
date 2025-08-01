@@ -10,7 +10,25 @@
 </head>
 
 <body>
-    <p>hello</p>
+    <h1>Chrome Custom Tabs Demo</h1>
+    <script>
+
+        let callback;
+        const { searchParams } = new URL(location.href);
+        if (searchParams) {
+            callback = searchParams.get('callback');
+        }
+
+        if (callback) {
+            const a = document.createElement('a');
+            const linkText = document.createTextNode('Back to App');
+            a.appendChild(linkText);
+            a.title = "go back to native app";
+            a.href = callback;
+            document.body.appendChild(a);
+        }
+
+    </script>
 </body>
 
 </html>
