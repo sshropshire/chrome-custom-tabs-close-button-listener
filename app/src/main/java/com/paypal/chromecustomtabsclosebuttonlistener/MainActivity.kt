@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.net.toUri
 import com.paypal.chromecustomtabsclosebuttonlistener.ui.theme.ChromeCustomTabsCloseButtonListenerTheme
 
+// Ref: https://stackoverflow.com/a/41444238
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
