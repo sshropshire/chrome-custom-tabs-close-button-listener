@@ -11,21 +11,26 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.paypal.chromecustomtabsclosebuttonlistener.ui.theme.ChromeCustomTabsCloseButtonListenerTheme
 import com.paypal.chromecustomtabsclosebuttonlistener.utils.OnLifecycleOwnerResumeEffect
@@ -68,8 +73,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChromeCustomTabsCloseButtonListenerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    ChromeCustomTabsDemo(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -79,7 +83,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun ChromeCustomTabsDemo(modifier: Modifier = Modifier) {
     var status by remember { mutableStateOf<ChromeCustomTabsResult?>(null) }
 
     // Ref: https://stackoverflow.com/a/67156998
@@ -105,33 +109,60 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
     Column(
         modifier = modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Hello $name!")
-        Button(onClick = {
-            val uri = "https://sshropshire.github.io/chrome-custom-tabs-close-button-listener"
-                .toUri()
-                .buildUpon()
-                .appendQueryParameter("callback", "chrome-custom-tabs-demo://success")
-                .build()
-            chromeCustomTabsLauncher.launch(uri)
-        }) {
+        Text(text = "Chrome Custom Tabs Demo")
+        Button(
+            modifier = Modifier
+                .defaultMinSize(minHeight = 48.dp),
+            onClick = {
+                val uri = "https://sshropshire.github.io/chrome-custom-tabs-close-button-listener"
+                    .toUri()
+                    .buildUpon()
+                    .appendQueryParameter("callback", "chrome-custom-tabs-demo://success")
+                    .build()
+                chromeCustomTabsLauncher.launch(uri)
+            }) {
             Text(text = "Launch Chrome Custom Tab")
         }
 
-        when (val status = status) {
-            ChromeCustomTabsResult.SuccessViaNewIntent -> Text("Success! via New Intent")
-            ChromeCustomTabsResult.SuccessViaLifecycleResumed -> Text("Success! via Lifecycle Resumed")
-            ChromeCustomTabsResult.CanceledViaActivityResult -> Text("User Canceled via Activity Result")
+        val message = status?.let { status ->
+            when (status) {
+                ChromeCustomTabsResult.SuccessViaNewIntent ->
+                    """
+                    Success!
+                    via New Intent
+                    """
 
-            is ChromeCustomTabsResult.Unknown -> {
-                Text("Unexpected activity result from Chrome Custom Tab")
-                Text("ResultCode Code: ${status.resultCode}")
-                Text("Intent: ${status.intent}")
-            }
+                ChromeCustomTabsResult.SuccessViaLifecycleResumed ->
+                    """
+                    Success!
+                    via Lifecycle Resumed 
+                    """
 
-            null -> {
-                /* display nothing */
+                ChromeCustomTabsResult.CanceledViaActivityResult ->
+                    """
+                    User Canceled
+                    via Activity Result
+                    """
+
+                is ChromeCustomTabsResult.Unknown ->
+                    """
+                    Unexpected activity result from Chrome Custom Tab
+                    ResultCode Code: ${status.resultCode}
+                    Intent: ${status.intent}
+                    """
+
             }
+        }
+        message?.let {
+            Text(
+                text = it.trimIndent(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge
+            )
         }
     }
 }
@@ -140,6 +171,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     ChromeCustomTabsCloseButtonListenerTheme {
-        Greeting("Android")
+        ChromeCustomTabsDemo()
     }
 }
